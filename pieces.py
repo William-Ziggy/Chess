@@ -1,11 +1,13 @@
+import tkinter
+
 class Piece:
 
-    def __init__():
+    def __init__(self, x, y, white):
+        self.x = x
+        self.y = y
+        self.white = white
 
-
-
-
-
+        
 
 
 class King(Piece):
