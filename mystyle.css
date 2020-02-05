@@ -3,20 +3,19 @@ body {
   font-family: sans-serif;
   margin: 0;
   padding: 0;
+  position: relative;
 }
 #board{
-  width: 400px;
-  height: 400px;
+  width: 50vh;
+  height: 50vh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, + 50%);
   font-size: 0;
 }
-.square{
+#square{
   width: 50px;
   height: 50px;
   display: inline-block;
-}
-.light{
-  background-color: white;
-}
-.dark{
-  background-color: black;
 }
