@@ -6,6 +6,8 @@ class King {
         this.alive = alive;
         this.white = white;
 
+        this.selected = 0;
+
         this.sx = 0;
         this.sWidth=320;
         this.sHeight=320;
@@ -22,6 +24,8 @@ class Queen {
         this.j = j;
         this.alive = alive;
         this.white = white;
+
+        this.selected = 0;
 
         this.sx = 320;
         this.sWidth=320;
@@ -40,6 +44,8 @@ class Rook {
         this.alive = alive;
         this.white = white;
 
+        this.selected = 0;
+
         this.sx = 1280;
         this.sWidth=320;
         this.sHeight=320;
@@ -56,6 +62,8 @@ class Bishop {
         this.j = j;
         this.alive = alive;
         this.white = white;
+
+        this.selected = 0;
 
         this.sx = 640;
         this.sWidth=320;
@@ -74,6 +82,8 @@ class Knight {
         this.alive = alive;
         this.white = white;
 
+        this.selected = 0;
+
         this.sx = 960;
         this.sWidth=320;
         this.sHeight=320;
@@ -91,6 +101,8 @@ class Pawn {
         this.alive = alive;
         this.white = white;
 
+        this.selected = 0;
+
         this.sx = 1600;
         this.sWidth=320;
         this.sHeight=320;
@@ -101,7 +113,6 @@ class Pawn {
         }
     }
 }
-
 
 var canvas = document.querySelector('canvas');
 window.addEventListener("resize", repaint);
@@ -147,8 +158,14 @@ bKing = new King(4, 0, 1, 0);
 
 const bPieces = [bPawn1, bPawn2, bPawn3, bPawn4, bPawn5, bPawn6, bPawn7, bPawn8, bRook1, bRook2, bKnight1, bKnight2, bBishop1, bBishop2, bQueen, bKing];
 
-var whiteView = 0;
+var whiteView = 1;
+
+
+var boardSize;
+var bCornerX;
+var bCornerY;
 repaint();
+
 
 function repaint(){
     var winWidth = window.innerWidth;
@@ -158,7 +175,7 @@ function repaint(){
 
     var c = canvas.getContext("2d");
 
-    var boardSize = winHeight/1.5;
+    boardSize = winHeight/1.5;
 
     var centerX = winWidth/2;
     var centerY = winHeight/2;
@@ -166,8 +183,8 @@ function repaint(){
     var d = -1;
     var offset=0;
 
-    var bCornerX = (centerX-boardSize/2);
-    var bCornerY = (centerY-boardSize/2);
+    bCornerX = (centerX-boardSize/2);
+    bCornerY = (centerY-boardSize/2);
     var sSize = boardSize/8;
 
     c.clearRect(0, 0, canvas.width, canvas.height);
@@ -199,9 +216,6 @@ function drawPieces(c, sSize, bCornerX, bCornerY){
         }
 
         for(var i=0; i<wPieces.length; i++){
-
-
-
             if(whiteView==1){
                 pieces1 = wPieces;
                 pieces2 = bPieces;
@@ -218,7 +232,13 @@ function drawPieces(c, sSize, bCornerX, bCornerY){
                 y2 = bCornerY+sSize*7-pieces2[i].j*sSize;
             }
 
-
+            c.fillStyle = "green";
+            if(pieces1[i].selected==1){
+                c.fillRect(x1, y1, sSize, sSize);
+            }
+            if (pieces2[i].selected==1){
+                c.fillRect(x2, y2, sSize, sSize);
+            }
             c.drawImage(sprite, pieces1[i].sx, pieces1[i].sy, pieces1[i].sWidth, pieces1[i].sHeight, x1, y1, sSize, sSize);
             drawRotImage(c, Math.PI, sprite, pieces2[i].sx, pieces2[i].sy, pieces2[i].sWidth, pieces2[i].sHeight, x2, y2, sSize, sSize);
         }
@@ -234,4 +254,54 @@ function drawRotImage(c, rot, image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dH
     c.rotate(rot);
     c.drawImage(sprite, sx, sy, sWidth, sHeight, -halfWidth, -halfHeight, dWidth, dHeight);
     c.restore();
+}
+
+
+window.addEventListener("click",
+    function(event){
+        checkPiece(event.x, event.y)
+})
+
+function checkPiece(x, y){
+    //Inside board:
+    if(x>=bCornerX && x<(bCornerX+boardSize) && y>=bCornerY && y<(bCornerY+boardSize)){
+        var pos = whichTile(x, y)
+        var piece=null;
+        console.log(pos);
+        for(k=0; k<16; k++){
+            if(wPieces[k].i==pos[0]&&wPieces[k].j==pos[1]){
+                piece = wPieces[k];
+            }else if(bPieces[k].i==pos[0]&&bPieces[k].j==pos[1]){
+                piece = bPieces[k];
+            }
+        }
+    }
+    if(piece!=null){
+        if(piece.selected==0){
+            piece.selected=1;
+        }else{
+            piece.selected=0;
+        }
+    }
+    
+    repaint();
+}
+
+function whichTile(x, y){
+    var i=0;
+    var j=0;
+    //Sequential search:
+    for(k=0; k<8; k++){
+        if(x>=(bCornerX+k*boardSize/8)&&x<(bCornerX+(k+1)*boardSize/8)){
+            i=k;
+        }
+        if(y>=(bCornerY+k*boardSize/8)&&y<(bCornerY+(k+1)*boardSize/8)){
+            j=k;
+        }
+    }
+
+    if(whiteView==0){ //Transforms if its not whiteside
+        i = 9-i;
+    }
+    return [i, j]
 }
