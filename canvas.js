@@ -158,7 +158,7 @@ bKing = new King(4, 0, 1, 0);
 
 const bPieces = [bPawn1, bPawn2, bPawn3, bPawn4, bPawn5, bPawn6, bPawn7, bPawn8, bRook1, bRook2, bKnight1, bKnight2, bBishop1, bBishop2, bQueen, bKing];
 
-var whiteView = 1;
+var whiteView = 0;
 
 
 var boardSize;
@@ -240,7 +240,8 @@ function drawPieces(c, sSize, bCornerX, bCornerY){
                 c.fillRect(x2, y2, sSize, sSize);
             }
             c.drawImage(sprite, pieces1[i].sx, pieces1[i].sy, pieces1[i].sWidth, pieces1[i].sHeight, x1, y1, sSize, sSize);
-            drawRotImage(c, Math.PI, sprite, pieces2[i].sx, pieces2[i].sy, pieces2[i].sWidth, pieces2[i].sHeight, x2, y2, sSize, sSize);
+            c.drawImage(sprite, pieces2[i].sx, pieces2[i].sy, pieces2[i].sWidth, pieces2[i].sHeight, x2, y2, sSize, sSize);
+            //drawRotImage(c, Math.PI, sprite, pieces2[i].sx, pieces2[i].sy, pieces2[i].sWidth, pieces2[i].sHeight, x2, y2, sSize, sSize);
         }
 
 }
@@ -283,25 +284,33 @@ function checkPiece(x, y){
             piece.selected=0;
         }
     }
-    
+
     repaint();
 }
 
 function whichTile(x, y){
     var i=0;
     var j=0;
+
+    var xFactor;
+    var yFactor;
     //Sequential search:
     for(k=0; k<8; k++){
-        if(x>=(bCornerX+k*boardSize/8)&&x<(bCornerX+(k+1)*boardSize/8)){
+        if(whiteView==1){
+            xIncrement = k;
+            yIncrement = k;
+        }else{
+            xIncrement = 7 - k;
+            yIncrement = 7 - k;
+        }
+        if(x>=(bCornerX+xIncrement*boardSize/8)&&x<(bCornerX+(xIncrement+1)*boardSize/8)){
             i=k;
         }
-        if(y>=(bCornerY+k*boardSize/8)&&y<(bCornerY+(k+1)*boardSize/8)){
+        if(y>=(bCornerY+yIncrement*boardSize/8)&&y<(bCornerY+(yIncrement+1)*boardSize/8)){
             j=k;
         }
     }
 
-    if(whiteView==0){ //Transforms if its not whiteside
-        i = 9-i;
-    }
+
     return [i, j]
 }
